@@ -14,7 +14,7 @@ analyzer = ZoteroAnalyzer(ZOTERO_DB_PATH, CBORG_API_KEY, CBORG_BASE_URL, CBORG_M
 
 
 # categorize the tags using the chat completions API
-analyzer.categorize_tags(save=True)
+analyzer.categorize_tags(save=True, for_obsidian_mardown=True)
 
 # visualize the tags words in a word cloud
 analyzer.create_word_cloud(width=800, height=400, max_words=100, background_color='black', colormap='turbo')

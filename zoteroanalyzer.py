@@ -52,27 +52,43 @@ class ZoteroAnalyzer:
         all_tags = [tags.get(i, 'Unknown') for i in item_tags]
         return all_tags
 
-    def categorize_tags(self, save=True):
+    def categorize_tags(self, save=True, for_obsidian_mardown=True):
         """
         Categorize the tags using the chat completions API and saves it as a markdown file.
         """
         tags = self.unique_tags(save=False)
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": (
-                        "Categorize the following tags for my publication collection: " +
-                        str(tags) + " One tag can belong to multiple categories. "
-                        "Do not change the format of the tags." +
-                        "Use the following format as an output:" +
-                        "# category 1 \n [[tag-1]]|[[tag-2]] \n # category 2 \n [[tag-2]]|[[tag-3]]"
-                    )
-                }
-            ],
-            temperature=0.5
-        )
+        if for_obsidian_mardown:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": (
+                            "Categorize the following tags for my publication collection: " +
+                            str(tags) + " One tag can belong to multiple categories. "
+                            "Do not change the format of the tags." +
+                            "Use the following format as an output:" +
+                            "# category 1 \n [[tag-1]]|[[tag-2]] \n # category 2 \n [[tag-2]]|[[tag-3]]"
+                        )
+                    }
+                ],
+                temperature=0.5
+            )
+        else:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": (
+                            "Categorize the following tags for my publication collection: " +
+                            str(tags) + " One tag can belong to multiple categories. "
+                            "Do not change the format of the tags."
+                        )
+                    }
+                ],
+                temperature=0.5
+            )
         responded = response.choices[0].message.content
         if save:
             with open('categorized_tags.md', 'w') as f:
