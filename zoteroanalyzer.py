@@ -3,20 +3,30 @@ import openai
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import random
+from typing import Dict, List
 
 
 class ZoteroAnalyzer:
-    def __init__(self, db_path, api_key, base_url, model):
+    def __init__(self, db_path: str, api_key: str, base_url: str, model: str):
+        """
+        Initialize the ZoteroAnalyzer with database path, API key, base URL, and model.
+
+        :param db_path: Path to the SQLite database file.
+        :param api_key: API key for OpenAI.
+        :param base_url: Base URL for OpenAI API.
+        :param model: Model name for OpenAI API.
+        """
         self.db_path = db_path
         self.api_key = api_key
         self.base_url = base_url
         self.model = model
         self.client = openai.Client(api_key=self.api_key, base_url=self.base_url)
 
-    def get_tags_with_tagid(self):
+    def get_tags_with_tagid(self) -> Dict[int, str]:
         """
-        Returns a dictionary of tags with their tagID
-        eg. {1: 'tag1', 2: 'tag2'}
+        Returns a dictionary of tags with their tagID.
+
+        :return: Dictionary with tagID as keys and tag names as values.
         """
         conn = sqlite3.connect(self.db_path)
         cur = conn.cursor()
@@ -25,9 +35,11 @@ class ZoteroAnalyzer:
         conn.close()
         return tags
 
-    def get_item_tags(self):
+    def get_item_tags(self) -> List[int]:
         """
-        Returns a list of tags for each item
+        Returns a list of tagIDs for each item.
+
+        :return: List of tagIDs.
         """
         conn = sqlite3.connect(self.db_path)
         cur = conn.cursor()
@@ -36,7 +48,13 @@ class ZoteroAnalyzer:
         conn.close()
         return item_tags
 
-    def unique_tags(self, save=True):
+    def unique_tags(self, save: bool = True) -> List[str]:
+        """
+        Returns a list of unique tags. Optionally saves the tags to a file.
+
+        :param save: Whether to save the unique tags to a file.
+        :return: List of unique tags.
+        """
         tags = self.get_tags_with_tagid()
         item_tags = self.get_item_tags()
         non_empty_tags = set(item_tags)
@@ -46,15 +64,24 @@ class ZoteroAnalyzer:
                 f.write('\n'.join(unique_tags))
         return unique_tags
 
-    def all_tags(self):
+    def all_tags(self) -> List[str]:
+        """
+        Returns a list of all tags.
+
+        :return: List of all tags.
+        """
         tags = self.get_tags_with_tagid()
         item_tags = self.get_item_tags()
         all_tags = [tags.get(i, 'Unknown') for i in item_tags]
         return all_tags
 
-    def categorize_tags(self, save=True, for_obsidian_mardown=True):
+    def categorize_tags(self, save: bool = True, for_obsidian_mardown: bool = True) -> str:
         """
-        Categorize the tags using the chat completions API and saves it as a markdown file.
+        Categorize the tags using the chat completions API and optionally saves it as a markdown file.
+
+        :param save: Whether to save the categorized tags to a file.
+        :param for_obsidian_mardown: Whether to format the output for Obsidian markdown.
+        :return: Categorized tags as a string.
         """
         tags = self.unique_tags(save=False)
         if for_obsidian_mardown:
@@ -95,7 +122,12 @@ class ZoteroAnalyzer:
                 f.write(response.choices[0].message.content)
         return responded
 
-    def create_word_cloud(self, **kwargs):
+    def create_word_cloud(self, **kwargs) -> None:
+        """
+        Creates and displays a word cloud from the tags.
+
+        :param kwargs: Additional keyword arguments for WordCloud.
+        """
         tags = self.all_tags()
         tags = [tag.replace(" ", "-") for tag in tags]
         random.shuffle(tags)  # shuffle the tags to get a random word cloud
