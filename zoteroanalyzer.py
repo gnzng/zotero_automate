@@ -37,6 +37,16 @@ class ZoteroAnalyzer:
         return item_tags
 
     def unique_tags(self, save=True):
+        """
+        Retrieve unique tags from items and optionally save them to a file.
+        This method fetches tags and item tags, filters out empty tags, and creates
+        a list of unique tags. If the `save` parameter is set to True, the unique
+        tags are saved to a file named 'unique_tags.txt'.
+        Args:
+            save (bool): If True, save the unique tags to a file. Default is True.
+        Returns:
+            list: A list of unique tags.
+        """
         tags = self.get_tags_with_tagid()
         item_tags = self.get_item_tags()
         non_empty_tags = set(item_tags)
@@ -55,6 +65,11 @@ class ZoteroAnalyzer:
     def categorize_tags(self, save=True, for_obsidian_mardown=True):
         """
         Categorize the tags using the chat completions API and saves it as a markdown file.
+        Parameters:
+        save: If True, saves the categorized tags as a markdown file.
+        for_obsidian_mardown: If True, the output is formatted for Obsidian markdown, with tags in double brackets.
+        Returns:
+        responded: The categorized tags as a string.
         """
         tags = self.unique_tags(save=False)
         if for_obsidian_mardown:
@@ -96,6 +111,16 @@ class ZoteroAnalyzer:
         return responded
 
     def create_word_cloud(self, **kwargs):
+        """
+        Generates and displays a word cloud from the tags.
+        This method retrieves all tags, replaces spaces with hyphens, shuffles the tags,
+        and generates a word cloud using the WordCloud library. The word cloud is then
+        displayed using matplotlib.
+        Parameters:
+        **kwargs: Additional keyword arguments to pass to the WordCloud constructor.
+        Returns:
+        None
+        """
         tags = self.all_tags()
         tags = [tag.replace(" ", "-") for tag in tags]
         random.shuffle(tags)  # shuffle the tags to get a random word cloud
