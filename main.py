@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 
 from zoteroanalyzer import ZoteroAnalyzer
+from visualizer import ZoteroVisualizer
 
 
 def load_config():
@@ -38,7 +39,7 @@ def create_analyzer(config):
 def run_analysis(analyzer):
     """Run the main analysis workflow."""
     # Categorize the tags using the chat completions API
-    analyzer.categorize_tags(save=True, for_obsidian_mardown=True)
+    categorized_content = analyzer.categorize_tags(save=True, for_obsidian_mardown=True)
 
     # Visualize the tags words in a word cloud
     analyzer.create_word_cloud(
@@ -47,6 +48,23 @@ def run_analysis(analyzer):
 
     # Save the unique tags in a text file for further analysis
     analyzer.unique_tags(save=True)
+
+    # Get tag-to-titles mapping
+    tag_to_titles = analyzer.get_tag_to_titles()
+
+    # Create interactive visualizations
+    visualizer = ZoteroVisualizer()
+    categories = visualizer.parse_categorized_tags(categorized_content)
+
+    # Create radar chart (still just tag counts)
+    radar_path = visualizer.create_category_radar(categories)
+    print(f"Radar chart saved to: {radar_path}")
+
+    # Create enhanced network visualization with paper titles
+    network_path = visualizer.create_simple_network(
+        categories, tag_to_titles=tag_to_titles
+    )
+    print(f"Network visualization saved to: {network_path}")
 
 
 def main():

@@ -21,3 +21,4 @@ build/
 *.rej
 *.sublime-project
 *.sublime-workspace
+*.html

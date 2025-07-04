@@ -58,10 +58,10 @@ class ZoteroAnalyzer:
         tags = self.get_tags_with_tagid()
         item_tags = self.get_item_tags()
         non_empty_tags = set(item_tags)
-        unique_tags = [tags.get(i, 'Unknown') for i in non_empty_tags]
+        unique_tags = [tags.get(i, "Unknown") for i in non_empty_tags]
         if save:
-            with open('unique_tags.txt', 'w') as f:
-                f.write('\n'.join(unique_tags))
+            with open("unique_tags.txt", "w") as f:
+                f.write("\n".join(unique_tags))
         return unique_tags
 
     def all_tags(self) -> List[str]:
@@ -72,10 +72,12 @@ class ZoteroAnalyzer:
         """
         tags = self.get_tags_with_tagid()
         item_tags = self.get_item_tags()
-        all_tags = [tags.get(i, 'Unknown') for i in item_tags]
+        all_tags = [tags.get(i, "Unknown") for i in item_tags]
         return all_tags
 
-    def categorize_tags(self, save: bool = True, for_obsidian_mardown: bool = True) -> str:
+    def categorize_tags(
+        self, save: bool = True, for_obsidian_mardown: bool = True
+    ) -> str:
         """
         Categorize the tags using the chat completions API and optionally saves it as a markdown file.
 
@@ -91,15 +93,16 @@ class ZoteroAnalyzer:
                     {
                         "role": "user",
                         "content": (
-                            "Categorize the following tags for my publication collection: " +
-                            str(tags) + " One tag can belong to multiple categories. "
-                            "Do not change the format of the tags." +
-                            "Use the following format as an output:" +
-                            "# category 1 \n [[tag-1]]|[[tag-2]] \n # category 2 \n [[tag-2]]|[[tag-3]]"
-                        )
+                            "Categorize the following tags for my publication collection: "
+                            + str(tags)
+                            + " One tag can belong to multiple categories. "
+                            "Do not change the format of the tags."
+                            + "Use the following format as an output:"
+                            + "# category 1 \n [[tag-1]]|[[tag-2]] \n # category 2 \n [[tag-2]]|[[tag-3]]"
+                        ),
                     }
                 ],
-                temperature=0.5
+                temperature=0.5,
             )
         else:
             response = self.client.chat.completions.create(
@@ -108,17 +111,18 @@ class ZoteroAnalyzer:
                     {
                         "role": "user",
                         "content": (
-                            "Categorize the following tags for my publication collection: " +
-                            str(tags) + " One tag can belong to multiple categories. "
+                            "Categorize the following tags for my publication collection: "
+                            + str(tags)
+                            + " One tag can belong to multiple categories. "
                             "Do not change the format of the tags."
-                        )
+                        ),
                     }
                 ],
-                temperature=0.5
+                temperature=0.5,
             )
         responded = response.choices[0].message.content
         if save:
-            with open('categorized_tags.md', 'w') as f:
+            with open("categorized_tags.md", "w") as f:
                 f.write(response.choices[0].message.content)
         return responded
 
@@ -131,9 +135,30 @@ class ZoteroAnalyzer:
         tags = self.all_tags()
         tags = [tag.replace(" ", "-") for tag in tags]
         random.shuffle(tags)  # shuffle the tags to get a random word cloud
-        wordcloud = WordCloud(regexp=r"\w[\w'-]*", **kwargs).generate(' '.join(tags))
+        wordcloud = WordCloud(regexp=r"\w[\w'-]*", **kwargs).generate(" ".join(tags))
         plt.figure()
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis('off')
+        plt.imshow(wordcloud, interpolation="bilinear")
+        plt.axis("off")
         plt.tight_layout(pad=0)
         plt.show()
+
+    def get_tag_to_titles(self) -> Dict[str, List[str]]:
+        """
+        Returns a dictionary mapping tag names to a list of paper titles.
+        """
+        conn = sqlite3.connect(self.db_path)
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT tags.name, itemDataValues.value as title
+            FROM itemTags
+            JOIN tags ON itemTags.tagID = tags.tagID
+            JOIN itemData ON itemTags.itemID = itemData.itemID AND itemData.fieldID = 1
+            JOIN itemDataValues ON itemData.valueID = itemDataValues.valueID
+        """
+        )
+        tag_to_titles = {}
+        for tag, title in cur.fetchall():
+            tag_to_titles.setdefault(tag, []).append(title)
+        conn.close()
+        return tag_to_titles
