@@ -4,18 +4,27 @@ A Python class for analyzing Zotero databases and generating word clouds.
 
 ## Installation
 
-To use this class, you'll need to install the following libraries:
-
-* `sqlite3`
-* `openai`
-* `wordcloud`
-* `matplotlib`
-
-You can install these libraries using pip:
+### Option 1: Using requirements.txt (Recommended)
 
 ```bash
-pip install sqlite3 openai wordcloud matplotlib
+pip install -r requirements.txt
 ```
+
+### Option 2: Using setup.py
+
+```bash
+pip install -e .
+```
+
+### Option 3: Manual installation
+
+Install the required dependencies:
+
+```bash
+pip install openai wordcloud matplotlib python-dotenv
+```
+
+Note: `sqlite3` is included in Python's standard library, so no additional installation is needed.
 
 ## Usage
 
