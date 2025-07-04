@@ -1,70 +1,110 @@
-# Zotero Analyzer
+# Zotero Automation
 
-A Python class for analyzing Zotero databases and generating word clouds.
+A Python tool for analyzing Zotero library tags using AI categorization and visualization.
+
+## Features
+
+- Extract and analyze tags from Zotero SQLite database
+- AI-powered tag categorization using OpenAI API
+- Generate word clouds from tags
+- Export categorized tags in Obsidian markdown format
+- Save unique tags for further analysis
 
 ## Installation
 
-### Option 1: Using requirements.txt (Recommended)
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd zotero_automate
+```
 
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### Option 2: Using setup.py
-
+3. Set up environment variables:
 ```bash
-pip install -e .
+cp .env-example .env
+# Edit .env with your actual values
 ```
-
-### Option 3: Manual installation
-
-Install the required dependencies:
-
-```bash
-pip install openai wordcloud matplotlib python-dotenv
-```
-
-Note: `sqlite3` is included in Python's standard library, so no additional installation is needed.
 
 ## Usage
 
-To use the Zotero Analyzer class, create an instance of the class and pass in the following arguments:
+Run the main analysis:
+```bash
+python main.py
+```
 
-* `db_path`: The path to your Zotero database file.
-* `api_key`: Your API key.
-* `base_url`: The base URL for the API.
-* `model`: The name of the OpenAI model you want to use.
+## Testing
 
-## Methods
+The project includes comprehensive tests using pytest. Here's how to run them:
 
-The Zotero Analyzer class provides the following methods:
+### Install test dependencies
+```bash
+pip install -r requirements.txt
+```
 
-### `create_word_cloud(**kwargs)`
+### Run all tests
+```bash
+# Using pytest directly
+pytest
 
-Creates a word cloud using the `wordcloud` library and displays it using `matplotlib`. Additional arguments can be passed to customize the word cloud.
+# Using the test runner script
+python run_tests.py
+```
 
-![wordcloud](example_imgs/example_wordcloud.png)
+### Run specific tests
+```bash
+# Run only main module tests
+pytest tests/test_main.py
 
-### `categorize_tags()`
+# Run only ZoteroAnalyzer tests
+pytest tests/test_zoteroanalyzer.py
 
-Uses the OpenAI API to categorize the tags and returns the categorized tags as a string. Saves the result to `categorized_tags.md`.
+# Run a specific test function
+pytest tests/test_main.py::TestLoadConfig::test_load_config_success
+```
 
-### `plane_tags(save=True)`
+### Run tests with coverage
+```bash
+pytest --cov=. --cov-report=html
+# Open htmlcov/index.html to view coverage report
+```
 
-Returns a list of unique tags and saves them to `plane_tags.txt` if `save` is `True`.
+### Test Features
 
-### `get_tags_with_tagid()`
+- **Unit Tests**: Test individual functions and methods
+- **Integration Tests**: Test database interactions with temporary SQLite databases
+- **Mock Tests**: Test API calls without making actual network requests
+- **Error Handling**: Test various error conditions and edge cases
+- **Coverage Reporting**: Generate HTML coverage reports
 
-Returns a dictionary of tags with their tag IDs.
+### Test Structure
 
-### `get_item_tags()`
+```
+tests/
+├── __init__.py
+├── test_main.py          # Tests for main.py functions
+└── test_zoteroanalyzer.py # Tests for ZoteroAnalyzer class
+```
 
-Returns a list of tags for each item.
+## Configuration
 
-### `all_tags()`
+Create a `.env` file with the following variables:
+- `ZOTERO_DB_PATH`: Path to your Zotero SQLite database
+- `CBORG_API_KEY`: Your OpenAI API key
+- `CBORG_BASE_URL`: OpenAI API base URL
+- `CBORG_MODEL`: OpenAI model name to use
 
-Returns a list of all tags.
+## Output Files
 
-## Example Use Cases
+- `unique_tags.txt`: List of unique tags from your library
+- `categorized_tags.md`: AI-categorized tags in markdown format
+- Word cloud visualization (displayed)
 
-See `main.py` for some example use cases of the Zotero Analyzer class.
+## Contributing
+
+1. Write tests for new features
+2. Ensure all tests pass before submitting
+3. Follow the existing code structure and style
