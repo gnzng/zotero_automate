@@ -86,7 +86,8 @@ class ZoteroVisualizer:
         save_path: str = "category_network.html",
     ) -> str:
         """
-        Create a simple network visualization showing categories and tags, with paper titles on hover and node size by paper count.
+        Create a simple network visualization showing categories and tags, with paper titles on hover
+        and node size by paper count.
 
         :param categories: Dictionary with categories and their tags
         :param tag_to_titles: Dictionary mapping tag names to lists of paper titles
