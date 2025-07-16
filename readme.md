@@ -51,9 +51,17 @@ You should be able to uncomment or comment the things you would like to run your
 
 - `unique_tags.txt`: List of unique tags from your library
 - `categorized_tags.md`: AI-categorized tags in markdown format, that works great to include in obsidian
-- Word cloud visualization (displayed)
+- Word cloud visualization
 
 ![wordcloud](example_imgs/example_wordcloud.png)
+
+- Interactive network visualizer from tags and categories 
+
+![network](example_imgs/example_network.png)
+
+- Tag categories as an interactive radar plot
+
+![radar](example_imgs/example_radar.png)
 
 ## Contributing
 
