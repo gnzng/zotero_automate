@@ -6,3 +6,6 @@ pytest>=7.0.0
 pytest-mock>=3.10.0
 pytest-cov>=4.0.0
 plotly>=5.0.0 
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+pdfplumber>=0.6.0
