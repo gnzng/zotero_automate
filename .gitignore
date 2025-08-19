@@ -1,4 +1,6 @@
 .env
+.venv
+.pytest_cache/
 *tags.*
 __pycache__/
 *.py[cod]
